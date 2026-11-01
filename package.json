@@ -1,7 +1,7 @@
 {
-  "name": "dsh-local-apps",
-  "version": "0.1.1",
-  "description": "DeepSeek Harness plugin: call local Windows software (WizTree disk scans, arbitrary executables) and act on the result",
+  "name": "dsh-disk-cleaner",
+  "version": "0.2.0",
+  "description": "DeepSeek Harness plugin that frees space on a full Windows drive: scan with WizTree, delete regenerable junk, move folders to another volume behind a junction. Dry-run by default.",
   "type": "module",
   "main": "./lib/index.js",
   "exports": {
@@ -21,10 +21,12 @@
     "deepseek-harness",
     "dsh",
     "dsh-plugin",
-    "wiztree",
-    "disk-usage",
     "disk-cleanup",
-    "junction"
+    "disk-space",
+    "wiztree",
+    "c-drive",
+    "junction",
+    "windows"
   ],
   "engines": {
     "node": ">=22.0.0"
@@ -36,8 +38,8 @@
   },
   "dshhub": {
     "schemaVersion": 1,
-    "displayName": "Local Apps 本地软件调用",
-    "summary": "让 agent 直接调用本机软件：WizTree 磁盘扫描、已安装软件清单、任意可执行文件运行。",
+    "displayName": "Disk Cleaner 磁盘清理",
+    "summary": "给塞满的 Windows 系统盘腾空间：WizTree 扫描定位、白名单清理可再生垃圾、把大目录搬到其他盘并留联接，默认 dry-run。",
     "categories": [
       "系统"
     ],
@@ -53,10 +55,10 @@
   "author": "lvyue1314",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lvyue1314/dsh-local-apps.git"
+    "url": "git+https://github.com/lvyue1314/dsh-disk-cleaner.git"
   },
-  "homepage": "https://github.com/lvyue1314/dsh-local-apps#readme",
+  "homepage": "https://github.com/lvyue1314/dsh-disk-cleaner#readme",
   "bugs": {
-    "url": "https://github.com/lvyue1314/dsh-local-apps/issues"
+    "url": "https://github.com/lvyue1314/dsh-disk-cleaner/issues"
   }
 }

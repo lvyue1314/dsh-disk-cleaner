@@ -1,25 +1,35 @@
-# dsh-local-apps
+# dsh-disk-cleaner
 
-A plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) that lets the agent drive
-software already installed on the machine — **WizTree** first of all — and turn the result into
-structured data it can reason about.
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows-0078D6.svg)](#)
+[![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4176E6.svg)](https://github.com/deepseek-ai/deepseek-harness)
 
 **English** | [中文](#中文说明)
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Platform](https://img.shields.io/badge/platform-Windows-0078D6.svg)](#) [![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4176E6.svg)](https://github.com/deepseek-ai/deepseek-harness)
+A plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) that frees space on a
+full Windows system drive: find what is eating it, delete what is regenerable, and move what can live
+on another volume — without touching a single user document.
+
+```
+1. find     wiztree_scan / disk_free      what is eating the drive
+2. judge    local_apps_list               what is installed, where, how big
+3. delete   system_cleanup                regenerable junk, dry-run first
+4. move     disk_migrate                  big folders to another volume, junction behind
+5. escape   local_apps_run                anything else, e.g. an uninstaller
+```
 
 Windows only · Node >= 22 · DSH >= 0.2.1-rc.5 · MIT
 
 ---
 
-## Why this plugin exists
+## Why this is a plugin
 
 On Windows the harness runs shell tools inside a sandbox, and on a typical desktop that means
 **every child process fails with `0xC0000142` (STATUS_DLL_INIT_FAILED)** — `pwsh` and `bash` cannot
-start `WizTree.exe`, `reg.exe` or an uninstaller at all.
+start `WizTree.exe`, `robocopy`, `mklink` or an uninstaller at all.
 
 Plugin host code runs inside the harness process instead, outside that sandbox. That is the whole
-reason this is a plugin and not a shell script: it is the supported way to reach local software.
+reason this is a plugin: it is the supported way to reach the tools a disk cleanup needs.
 
 ## Tools
 
@@ -38,17 +48,17 @@ The plugin is a Cordis bundle: a package with a `dsh.bundle.patch` that inserts 
 
 ```bash
 # from your DSH profile directory
-pnpm add link:/path/to/dsh-local-apps
+pnpm add link:/path/to/dsh-disk-cleaner
 ```
 
 Then either add it to the profile `package.json`:
 
 ```json
 {
-  "dependencies": { "dsh-local-apps": "link:/path/to/dsh-local-apps" },
+  "dependencies": { "dsh-disk-cleaner": "link:/path/to/dsh-disk-cleaner" },
   "dsh": {
     "profile": {
-      "bundles": ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app", "dsh-local-apps"]
+      "bundles": ["@deepseek-ai/dsh-base", "@deepseek-ai/dsh-web-app", "dsh-disk-cleaner"]
     }
   }
 }
@@ -58,8 +68,8 @@ or insert the row directly in the profile `cordis.patch.yml`:
 
 ```yaml
 - insert:
-    - id: dsh-local-apps
-      name: dsh-local-apps
+    - id: dsh-disk-cleaner
+      name: dsh-disk-cleaner
 ```
 
 With `patchReload: live` in the profile manifest the tools appear on the next model call; otherwise
@@ -81,7 +91,7 @@ Point the loader row at `entry.js` instead of `index.js` and a profile reload im
 | Variable | Meaning |
 | --- | --- |
 | `DSH_WIZTREE` | Absolute path to `WizTree64.exe`. Optional — the plugin also looks it up on `PATH`, in the Inno Setup registry key and under `Program Files\WizTree`. |
-| `DSH_LOCAL_APPS_TMP` | Scratch directory for WizTree CSV exports. Defaults to `%TEMP%`, falling back to the volume with the most free space when the system drive is nearly full. |
+| `DSH_DISK_CLEANER_TMP` | Scratch directory for WizTree CSV exports. Defaults to `%TEMP%`, falling back to the volume with the most free space when the system drive is nearly full. |
 
 ## Usage
 
@@ -118,9 +128,11 @@ junction was created and the reason when it was not.
 
 ## 中文说明
 
+**给塞满的 Windows 系统盘腾空间**：定位、清理、搬迁三步走。
+
 在 Windows 上，DSH 的 `pwsh` / `bash` 工具跑在沙箱里，**任何子进程都会以 `0xC0000142`
 （STATUS_DLL_INIT_FAILED）失败**，调不动 `WizTree.exe`、`reg.exe` 或卸载器。插件代码运行在宿主进程内、
-沙箱之外，这正是"想调用本机软件就得写插件"的原因。
+沙箱之外——这正是磁盘清理这类活必须做成插件的原因。
 
 ### 六个工具
 
@@ -137,15 +149,15 @@ junction was created and the reason when it was not.
 
 ```bash
 cd <你的 DSH profile 目录>
-pnpm add link:/path/to/dsh-local-apps
+pnpm add link:/path/to/dsh-disk-cleaner
 ```
 
 在 profile 的 `cordis.patch.yml` 里插入一行：
 
 ```yaml
 - insert:
-    - id: dsh-local-apps
-      name: dsh-local-apps
+    - id: dsh-disk-cleaner
+      name: dsh-disk-cleaner
 ```
 
 profile 若是 `patchReload: live`，下一次模型调用就能看到工具；否则重启应用。
@@ -158,7 +170,7 @@ profile 若是 `patchReload: live`，下一次模型调用就能看到工具；�
 | 环境变量 | 说明 |
 | --- | --- |
 | `DSH_WIZTREE` | `WizTree64.exe` 的绝对路径（可选：也会查 PATH、Inno Setup 注册表键、`Program Files\\WizTree`） |
-| `DSH_LOCAL_APPS_TMP` | 扫描 CSV 的临时目录；默认 `%TEMP%`，系统盘快满时自动改用空闲最大的卷 |
+| `DSH_DISK_CLEANER_TMP` | 扫描 CSV 的临时目录；默认 `%TEMP%`，系统盘快满时自动改用空闲最大的卷 |
 
 ### 用法
 

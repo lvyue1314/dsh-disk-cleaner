@@ -1,4 +1,4 @@
-# dsh-local-apps bundle patch: one host plugin row.
+# dsh-disk-cleaner bundle patch: one host plugin row.
 - insert:
-    - id: dsh-local-apps
-      name: dsh-local-apps
+    - id: dsh-disk-cleaner
+      name: dsh-disk-cleaner
