@@ -6,6 +6,8 @@ structured data it can reason about.
 
 **English** | [中文](#中文说明)
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Platform](https://img.shields.io/badge/platform-Windows-0078D6.svg)](#) [![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4176E6.svg)](https://github.com/deepseek-ai/deepseek-harness)
+
 Windows only · Node >= 22 · DSH >= 0.2.1-rc.5 · MIT
 
 ---
