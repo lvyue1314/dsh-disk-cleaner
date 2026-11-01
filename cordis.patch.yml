@@ -1,0 +1,4 @@
+# dsh-local-apps bundle patch: one host plugin row.
+- insert:
+    - id: dsh-local-apps
+      name: dsh-local-apps

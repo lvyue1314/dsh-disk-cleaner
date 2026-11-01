@@ -1,0 +1,62 @@
+{
+  "name": "dsh-local-apps",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: call local Windows software (WizTree disk scans, arbitrary executables) and act on the result",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "examples"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "wiztree",
+    "disk-usage",
+    "disk-cleanup",
+    "junction"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dshhub": {
+    "schemaVersion": 1,
+    "displayName": "Local Apps 本地软件调用",
+    "summary": "让 agent 直接调用本机软件：WizTree 磁盘扫描、已安装软件清单、任意可执行文件运行。",
+    "categories": [
+      "系统"
+    ],
+    "surfaces": [
+      "host"
+    ],
+    "compatibility": {
+      "dsh": ">=0.2.1-rc.5",
+      "node": ">=22"
+    },
+    "permissions": {}
+  },
+  "author": "lvyue1314",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lvyue1314/dsh-local-apps.git"
+  },
+  "homepage": "https://github.com/lvyue1314/dsh-local-apps#readme",
+  "bugs": {
+    "url": "https://github.com/lvyue1314/dsh-local-apps/issues"
+  }
+}
