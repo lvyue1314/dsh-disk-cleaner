@@ -1,6 +1,6 @@
 {
   "name": "dsh-local-apps",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "DeepSeek Harness plugin: call local Windows software (WizTree disk scans, arbitrary executables) and act on the result",
   "type": "module",
   "main": "./lib/index.js",

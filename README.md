@@ -25,7 +25,7 @@ reason this is a plugin and not a shell script: it is the supported way to reach
 
 | Tool | What it does |
 | --- | --- |
-| `wiztree_scan` | Runs `WizTree64.exe` in headless export mode, parses the CSV and returns the biggest folders, biggest files and known cache directories. A 200 GB drive with 1.8 M entries scans in ~45 s. |
+| `wiztree_scan` | Runs `WizTree64.exe` in headless export mode, parses the CSV and returns the biggest folders, biggest files and known cache directories. A full system drive with millions of entries scans in about a minute. |
 | `local_apps_run` | Runs any local executable by absolute path, returns exit code, stdout, stderr and duration, bounded by a timeout. |
 | `local_apps_list` | Reads the Uninstall registry keys (HKLM, WOW6432Node, HKCU) and returns name, version, publisher, install location and size. |
 | `disk_free` | Per-volume capacity and free space. |
@@ -126,7 +126,7 @@ junction was created and the reason when it was not.
 
 | 工具 | 作用 |
 | --- | --- |
-| `wiztree_scan` | 调 WizTree 无界面导出 CSV 再解析，返回最大目录、最大文件和常见缓存体积；200 GB / 180 万条目约 45 秒 |
+| `wiztree_scan` | 调 WizTree 无界面导出 CSV 再解析，返回最大目录、最大文件和常见缓存体积；数百万条目的系统盘通常一分钟内完成 |
 | `local_apps_run` | 用绝对路径启动任意程序，回收退出码、stdout、stderr 和耗时 |
 | `local_apps_list` | 读注册表 Uninstall 项，列出已安装软件、版本、发布者、安装路径与大小 |
 | `disk_free` | 各卷总容量与可用空间 |
