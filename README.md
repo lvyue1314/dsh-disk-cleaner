@@ -4,6 +4,8 @@ A plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
 software already installed on the machine — **WizTree** first of all — and turn the result into
 structured data it can reason about.
 
+**English** | [中文](#中文说明)
+
 Windows only · Node >= 22 · DSH >= 0.2.1-rc.5 · MIT
 
 ---
@@ -107,6 +109,68 @@ junction was created and the reason when it was not.
 - `migrate-to-e.ps1` — batch folder migration with junctions (`-DryRun`, `-Only`).
 - `monthly-cleanup.ps1` — unattended cleanup for a scheduled task; writes a small report and runs
   fine as an S4U task without a loaded user profile.
+
+---
+
+<a id="中文说明"></a>
+
+## 中文说明
+
+在 Windows 上，DSH 的 `pwsh` / `bash` 工具跑在沙箱里，**任何子进程都会以 `0xC0000142`
+（STATUS_DLL_INIT_FAILED）失败**，调不动 `WizTree.exe`、`reg.exe` 或卸载器。插件代码运行在宿主进程内、
+沙箱之外，这正是"想调用本机软件就得写插件"的原因。
+
+### 六个工具
+
+| 工具 | 作用 |
+| --- | --- |
+| `wiztree_scan` | 调 WizTree 无界面导出 CSV 再解析，返回最大目录、最大文件和常见缓存体积；200 GB / 180 万条目约 45 秒 |
+| `local_apps_run` | 用绝对路径启动任意程序，回收退出码、stdout、stderr 和耗时 |
+| `local_apps_list` | 读注册表 Uninstall 项，列出已安装软件、版本、发布者、安装路径与大小 |
+| `disk_free` | 各卷总容量与可用空间 |
+| `system_cleanup` | 白名单清理（更新缓存 / WER / CBS 日志 / 临时文件 / 浏览器缓存 / 回收站 / WinSxS），**默认 dry-run**，执行需 `confirm: true` |
+| `disk_migrate` | 把目录搬到另一个卷并留下目录联接（junction），**默认 dry-run**；先复制、校验体积、再删源 |
+
+### 安装
+
+```bash
+cd <你的 DSH profile 目录>
+pnpm add link:/path/to/dsh-local-apps
+```
+
+在 profile 的 `cordis.patch.yml` 里插入一行：
+
+```yaml
+- insert:
+    - id: dsh-local-apps
+      name: dsh-local-apps
+```
+
+profile 若是 `patchReload: live`，下一次模型调用就能看到工具；否则重启应用。
+
+> 开发时改 `lib/index.js` 不会生效——ESM 每进程只有一份模块实例。把入口指向 `lib/entry.js`
+> 并递增里面的 `?v=N`，重载时才会 import 新模块。
+
+### 配置
+
+| 环境变量 | 说明 |
+| --- | --- |
+| `DSH_WIZTREE` | `WizTree64.exe` 的绝对路径（可选：也会查 PATH、Inno Setup 注册表键、`Program Files\\WizTree`） |
+| `DSH_LOCAL_APPS_TMP` | 扫描 CSV 的临时目录；默认 `%TEMP%`，系统盘快满时自动改用空闲最大的卷 |
+
+### 用法
+
+```text
+wiztree_scan({ target: "C:\\", depth: 2, top: 30 })
+system_cleanup({ dryRun: true })                     # 先量，不动手
+system_cleanup({ dryRun: false, confirm: true, items: ["user-temp", "update-cache"] })
+disk_migrate({ source: "C:\\Users\\me\\.m2", target: "D:\\moved\\m2", dryRun: true })
+```
+
+### 安全设计
+
+破坏性工具默认 dry-run，必须显式 `confirm: true`；`disk_migrate` 在校验体积前绝不删除源目录，
+失败会报告原因而不是留个搬了一半的目录；`system_cleanup` 只碰固定白名单，不遍历个人文档或聊天记录。
 
 ## License
 
