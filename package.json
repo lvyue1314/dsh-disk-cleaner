@@ -1,6 +1,6 @@
 {
   "name": "dsh-disk-cleaner",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "DeepSeek Harness plugin that frees space on a full Windows drive: scan with WizTree, delete regenerable junk, move folders to another volume behind a junction. Dry-run by default.",
   "type": "module",
   "main": "./lib/index.js",

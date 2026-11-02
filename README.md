@@ -117,7 +117,7 @@ profile 若配置了 `patchReload: live`，下一次模型调用就能看到工�
 | 环境变量 | 说明 |
 | --- | --- |
 | `DSH_WIZTREE` | `WizTree64.exe` 的绝对路径。可选，不设就走上面的自动查找 |
-| `DSH_DISK_CLEANER_TMP` | 扫描导出 CSV 的临时目录。默认 `%TEMP%`；系统盘快满时会自动改用空闲最大的卷 |
+| `DSH_DISK_CLEANER_TMP` | 扫描导出 CSV 的临时目录。默认 `%TEMP%`；系统盘快满时会自动改用空闲最大的卷。**含非 ASCII 字符的候选会被跳过**（批处理工具处理不了这类路径），此时改用纯英文的卷内目录 |
 
 ---
 
@@ -154,6 +154,7 @@ disk_migrate({ source: "C:\\Users\\me\\.m2", target: "D:\\moved\\m2", dryRun: tr
 - `disk_migrate` 在校验体积达标前绝不删除源目录；复制失败会保留源并报告原因，不留"搬了一半"的目录
 - `system_cleanup` 只碰固定白名单，不遍历个人文档、聊天记录、已安装程序
 - `local_apps_run` 拒绝相对路径，且要求文件真实存在
+- `disk_migrate` 遇到含非 ASCII 字符的源/目标路径时，会在结果的 `warnings` 里提示：迁移本身安全（程序仍走 ASCII 的原路径），但该路径不要写进 `TEMP`/`PATH` 等环境变量
 
 ---
 
@@ -236,12 +237,16 @@ pnpm add link:/path/to/dsh-disk-cleaner
 | Variable | Meaning |
 | --- | --- |
 | `DSH_WIZTREE` | absolute path to `WizTree64.exe` (optional) |
-| `DSH_DISK_CLEANER_TMP` | scratch dir for scan exports; defaults to `%TEMP%`, falls back to the emptiest volume |
+| `DSH_DISK_CLEANER_TMP` | scratch dir for scan exports; defaults to `%TEMP%`, falls back to the emptiest volume. Candidates with non-ASCII characters are skipped — batch-based tools cannot handle them |
 
 ### Safety
 
 Destructive tools are dry-run by default and require `confirm: true`; `disk_migrate` never deletes the
 source before the copy is verified; `system_cleanup` only touches a fixed whitelist of regenerable paths.
+
+`disk_migrate` also returns a `warnings` entry when the source or target path contains non-ASCII
+characters: migration stays safe (programs keep using the ASCII path on the source drive), but such a
+path must not be wired into `TEMP`/`PATH`, where batch-based tools like conda fail.
 
 ---
 
