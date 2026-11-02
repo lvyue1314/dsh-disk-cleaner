@@ -137,6 +137,10 @@ system_cleanup({ dryRun: false, confirm: true, items: ["user-temp", "update-cach
 disk_migrate({ source: "C:\\Users\\me\\.m2", target: "D:\\moved\\m2", dryRun: true })
 ```
 
+> **把 TEMP 迁到别的盘时，目标路径一定要用纯英文**（例如 `E:\Temp`）。conda 等工具的批处理激活脚本
+> 处理不了含中文的 TEMP，`conda activate` 会直接报"系统找不到指定的路径"，而 `conda env list` 却一切正常——
+> 这个坑排查起来很费时间。插件自己的 `DSH_DISK_CLEANER_TMP` 不受影响，但系统级 TEMP 要遵守这条。
+
 常见可搬的目标：`.m2`、`.gradle`、`.nuget`、`.vscode`（扩展）、`%LOCALAPPDATA%\JetBrains`、
 `%APPDATA%\Code`、`pnpm` / `npm-cache`、Docker 数据目录等**可重建的缓存**。
 
